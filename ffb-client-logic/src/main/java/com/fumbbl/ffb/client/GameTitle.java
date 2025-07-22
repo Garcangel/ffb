@@ -21,11 +21,13 @@ public class GameTitle {
 	private long fPingTime;
 	private long fTurnTime;
 	private long fGameTime;
+	private long fPassiveTime;
 
 	public GameTitle() {
 		setPingTime(-1);
 		setTurnTime(-1);
 		setGameTime(-1);
+		setPassiveTime(-1);
 	}
 
 	public void update(GameTitle gameTitle) {
@@ -50,6 +52,9 @@ public class GameTitle {
 			}
 			if (gameTitle.getTurnTime() >= 0) {
 				setTurnTime(gameTitle.getTurnTime());
+			}
+			if (gameTitle.getPassiveTime() >= 0) {
+				setPassiveTime(gameTitle.getPassiveTime());
 			}
 		}
 	}
@@ -114,6 +119,14 @@ public class GameTitle {
 		fGameTime = pGameTime;
 	}
 
+	public long getPassiveTime() {
+		return fPassiveTime;
+	}
+
+	public void setPassiveTime(long pPassiveTime) {
+		fPassiveTime = pPassiveTime;
+	}
+
 	public String toString() {
 		StringBuilder title = new StringBuilder();
 		title.append("FantasyFootball");
@@ -144,6 +157,10 @@ public class GameTitle {
 		if (getPingTime() >= 0) {
 			title.append(" - Ping ");
 			appendPing(title);
+		}
+		if (getPassiveTime() >= 0) {
+			title.append(" - Passive ");
+			appendTime(title, getPassiveTime(), false);
 		}
 		return title.toString();
 	}

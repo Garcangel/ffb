@@ -74,6 +74,7 @@ public class Game extends ModelChangeObservable implements IJsonSerializable {
 	private final IFactorySource applicationSource;
 	private ModifierAggregator modifierAggregator;
 	private TeamState teamState = TeamState.FULL;
+	private final GameTimer gameTimer = new GameTimer();
 
 	public Game(IFactorySource applicationSource, FactoryManager manager) {
 		this.applicationSource = applicationSource;
@@ -515,6 +516,10 @@ public class Game extends ModelChangeObservable implements IJsonSerializable {
 
 	public boolean isConcessionPossible() {
 		return fConcessionPossible;
+	}
+
+	public GameTimer getGameTimer() {
+    return gameTimer;
 	}
 
 	public void setTesting(boolean pTesting) {

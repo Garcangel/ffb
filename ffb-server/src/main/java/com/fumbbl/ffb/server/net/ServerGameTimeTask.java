@@ -5,6 +5,7 @@ import com.fumbbl.ffb.model.Game;
 import com.fumbbl.ffb.server.FantasyFootballServer;
 import com.fumbbl.ffb.server.GameState;
 import com.fumbbl.ffb.server.util.UtilServerGame;
+import com.fumbbl.ffb.server.util.UtilServerPassiveTimer;
 import com.fumbbl.ffb.server.util.UtilServerTimer;
 
 import java.util.TimerTask;
@@ -24,6 +25,7 @@ public class ServerGameTimeTask extends TimerTask {
 				Game game = gameState.getGame();
 				boolean timeoutPossible = game.isTimeoutPossible();
 				UtilServerTimer.syncTime(gameState, currentTimeMillis);
+				UtilServerPassiveTimer.syncPassiveTimer(gameState, currentTimeMillis);
 				fServer.getCommunication().sendGameTime(gameState);
 				// check if timeout flag has changes -> sync game model
 				if (timeoutPossible != game.isTimeoutPossible()) {

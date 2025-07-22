@@ -16,14 +16,16 @@ public class ServerCommandGameTime extends ServerCommand {
 
 	private long fGameTime;
 	private long fTurnTime;
+	private long fPassiveTime;
 
 	public ServerCommandGameTime() {
 		super();
 	}
 
-	public ServerCommandGameTime(long gameTime, long turnTime) {
+	public ServerCommandGameTime(long gameTime, long turnTime, long passiveTime) {
 		fGameTime = gameTime;
 		fTurnTime = turnTime;
+		fPassiveTime = passiveTime;
 	}
 
 	public NetCommandId getId() {
@@ -46,6 +48,10 @@ public class ServerCommandGameTime extends ServerCommand {
 		return fTurnTime;
 	}
 
+	public long getPassiveTime() {
+		return fPassiveTime;
+	}
+
 	public boolean isReplayable() {
 		return false;
 	}
@@ -63,6 +69,7 @@ public class ServerCommandGameTime extends ServerCommand {
 		IJsonOption.COMMAND_NR.addTo(jsonObject, getCommandNr());
 		IJsonOption.GAME_TIME.addTo(jsonObject, fGameTime);
 		IJsonOption.TURN_TIME.addTo(jsonObject, fTurnTime);
+		IJsonOption.PASSIVE_TIME.addTo(jsonObject, fPassiveTime);
 		return jsonObject;
 	}
 
@@ -72,6 +79,7 @@ public class ServerCommandGameTime extends ServerCommand {
 		setCommandNr(IJsonOption.COMMAND_NR.getFrom(source, jsonObject));
 		fGameTime = IJsonOption.GAME_TIME.getFrom(source, jsonObject);
 		fTurnTime = IJsonOption.TURN_TIME.getFrom(source, jsonObject);
+		fPassiveTime = IJsonOption.PASSIVE_TIME.getFrom(source, jsonObject);
 		return this;
 	}
 

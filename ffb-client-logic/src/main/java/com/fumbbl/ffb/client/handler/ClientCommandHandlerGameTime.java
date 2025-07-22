@@ -23,6 +23,7 @@ public class ClientCommandHandlerGameTime extends ClientCommandHandler {
 		GameTitle gameTitle = new GameTitle();
 		gameTitle.setGameTime(gameTimeCommand.getGameTime());
 		gameTitle.setTurnTime(gameTimeCommand.getTurnTime());
+		gameTitle.setPassiveTime(gameTimeCommand.getPassiveTime());
 		updateGameTitle(gameTitle);
 
 		return true;

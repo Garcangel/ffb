@@ -17,6 +17,7 @@ import com.fumbbl.ffb.server.step.StepParameterKey;
 import com.fumbbl.ffb.server.step.bb2020.block.StepPushback;
 import com.fumbbl.ffb.server.step.bb2020.block.StepPushback.StepState;
 import com.fumbbl.ffb.server.util.UtilServerDialog;
+import com.fumbbl.ffb.server.util.UtilServerPassiveTimer;
 import com.fumbbl.ffb.server.util.UtilServerPushback;
 import com.fumbbl.ffb.server.util.UtilServerTimer;
 import com.fumbbl.ffb.skill.bb2020.SideStep;
@@ -76,6 +77,7 @@ public class SideStepBehaviour extends SkillBehaviour<SideStep> {
 							if ((sideStepHomePlayer && !game.isHomePlaying()) || (!sideStepHomePlayer && game.isHomePlaying())) {
 								game.setWaitingForOpponent(true);
 								UtilServerTimer.stopTurnTimer(step.getGameState(), System.currentTimeMillis());
+								UtilServerPassiveTimer.startPassiveTimer(step.getGameState(), System.currentTimeMillis());
 							}
 						}
 						step.publishParameter(new StepParameter(StepParameterKey.STARTING_PUSHBACK_SQUARE, null));

@@ -502,7 +502,8 @@ public class ServerCommunication implements Runnable, IReceivedCommandHandler {
 	public void sendGameTime(GameState gameState) {
 		if (gameState != null) {
 			Game game = gameState.getGame();
-			ServerCommandGameTime gameTimeCommand = new ServerCommandGameTime(game.getGameTime(), game.getTurnTime());
+			ServerCommandGameTime gameTimeCommand = new ServerCommandGameTime(game.getGameTime(), game.getTurnTime(), 
+			  game.getGameTimer().getPassiveElapsed());
 			sendAllSessions(gameState, gameTimeCommand, false);
 			// not logged in Game Log
 		}

@@ -346,6 +346,8 @@ public class StepEndTurn extends AbstractStep {
 				getResult().addReport(
 						new ReportTurnEnd(touchdownPlayerId, knockoutRecoveryArray, heatExhaustionArray, unzappedPlayers));
 
+				game.getGameTimer().recordTurn(game, isHomeTurnEnding, game.getTurnTime(), fNewHalf, fTouchdown, fEndGame);
+				
 				if (game.isTurnTimeEnabled()) {
 					UtilServerTimer.stopTurnTimer(getGameState(), System.currentTimeMillis());
 					game.setTurnTime(0);
