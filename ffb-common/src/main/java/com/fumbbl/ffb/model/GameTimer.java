@@ -69,39 +69,33 @@ public class GameTimer {
 	public TeamTimeTracker getAwayTimer() { return awayTimer; }
 
 	public void startPassive(long now) {
-		passiveStart = now;
-		passiveElapsed = 0;
+		if (passiveStart == 0) {
+			passiveStart = now;
+		}
 	}
 
-	public void stopPassive(long now) {
+	public void pausePassive(long now) {
 		if (passiveStart > 0) {
-			passiveElapsed = now - passiveStart;
+			passiveElapsed += now - passiveStart;
 			passiveStart = 0;
 		}
 	}
 
-	// Get the elapsed time for the *current* or last passive period.
-	// If the timer is running, returns (now - passiveStart).
-	// If stopped, returns the last recorded elapsed value.
-	public long getPassiveElapsed() {
-		if (passiveStart > 0) {
-			return System.currentTimeMillis() - passiveStart;
-		} else {
-			return passiveElapsed;
-		}
-	}
-
-	public void clearPassive() {
+	public void stopPassive(long now) {
+    passiveStart = 0;
 		passiveElapsed = 0;
-		passiveStart = 0;
 	}
 
-	// Sync method: forces the passiveElapsed to update if timer is running (used for ticks, logging, etc)
+
 	public void syncPassive(long now) {
 		if (passiveStart > 0) {
-			passiveElapsed = now - passiveStart;
+			passiveElapsed += now - passiveStart;
+			passiveStart = now;
 		}
-		// Does NOT stop the timer—just updates the cached elapsed value
+	}
+
+	public long getPassiveElapsed() {
+		return passiveElapsed;
 	}
 
 	public long getPassiveStart() {

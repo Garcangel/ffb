@@ -15,6 +15,7 @@ import com.fumbbl.ffb.server.net.ReceivedCommand;
 import com.fumbbl.ffb.server.net.ReplaySessionManager;
 import com.fumbbl.ffb.server.net.ServerCommunication;
 import com.fumbbl.ffb.server.net.SessionManager;
+import com.fumbbl.ffb.server.util.UtilServerPassiveTimer;
 import com.fumbbl.ffb.server.util.UtilServerTimer;
 import com.fumbbl.ffb.util.ArrayTool;
 import org.eclipse.jetty.websocket.api.Session;
@@ -76,6 +77,7 @@ public class ServerCommandHandlerSocketClosed extends ServerCommandHandler {
 				long currentTimeMillis = System.currentTimeMillis();
 				UtilServerTimer.syncTime(gameState, currentTimeMillis);
 				UtilServerTimer.stopTurnTimer(gameState, currentTimeMillis);
+				UtilServerPassiveTimer.pausePassiveTimer(gameState, currentTimeMillis);
 			}
 
 			Session homeSession = sessionManager.getSessionOfHomeCoach(gameId);

@@ -1,5 +1,6 @@
 package com.fumbbl.ffb.server.util;
 
+import com.fumbbl.ffb.model.Game;
 import com.fumbbl.ffb.model.GameTimer;
 import com.fumbbl.ffb.server.GameState;
 
@@ -15,6 +16,11 @@ public class UtilServerPassiveTimer {
 	public static void stopPassiveTimer(GameState gameState, long currentTimeMillis) {
 		GameTimer timer = gameState.getGame().getGameTimer();
 		timer.stopPassive(currentTimeMillis);
+	}
+
+	public static void pausePassiveTimer(GameState gameState, long now) {
+		GameTimer timer = gameState.getGame().getGameTimer();
+		timer.pausePassive(now);
 	}
 
 	public static void syncPassiveTimer(GameState gameState, long currentTimeMillis) {

@@ -29,27 +29,45 @@
 
 **Fields for passive timing:**
 
-- `private long passiveTimeStarted = 0;`
-- `private long passiveElapsed = 0;`![![alt text](image-1.png)](image.png)
+- `private long passiveStart = 0;`
+- `private long passiveElapsed = 0;`
 
 **Methods for passive timer state:**
 
 ```java
 public void startPassive(long now) {
-	passiveStart = now;
-	passiveElapsed = 0;
+	if (passiveStart == 0) {
+		passiveStart = now;
+	}
 }
-public void stopPassive(long now) {
+
+public void pausePassive(long now) {
 	if (passiveStart > 0) {
-		passiveElapsed = now - passiveStart;
+		passiveElapsed += now - passiveStart;
 		passiveStart = 0;
 	}
 }
-public long getPassiveElapsed() { return passiveElapsed; }
-public void clearPassive() {
-	passiveElapsed = 0;
+
+public void stopPassive(long now) {
 	passiveStart = 0;
+	passiveElapsed = 0;
 }
+
+public void syncPassive(long now) {
+	if (passiveStart > 0) {
+		passiveElapsed += now - passiveStart;
+		passiveStart = now;
+	}
+}
+
+public long getPassiveElapsed() {
+	return passiveElapsed;
+}
+
+public long getPassiveStart() {
+	return passiveStart;
+}
+
 ```
 
 ---
@@ -94,6 +112,17 @@ public static void stopPassiveTimer(GameState gameState, long currentTimeMillis)
 	GameTimer timer = gameState.getGame().getGameTimer();
 	timer.stopPassive(currentTimeMillis);
 }
+
+public static void pausePassiveTimer(GameState gameState, long now) {
+	GameTimer timer = gameState.getGame().getGameTimer();
+	timer.pausePassive(now);
+}
+
+public static void syncPassiveTimer(GameState gameState, long currentTimeMillis) {
+	GameTimer timer = gameState.getGame().getGameTimer();
+	timer.syncPassive(currentTimeMillis);
+}
+
 ```
 
 ---
@@ -136,6 +165,25 @@ public static void stopPassiveTimer(GameState gameState, long currentTimeMillis)
 
 - Whenever a dialog stops the turn timer, passive timer starts.
 - When dialog closes, passive timer stops and (optionally) logs to the team tracker.
+
+#### c. **Disconnect / Reconnect Support**
+
+- In `ServerCommandHandlerSocketClose.java`, on disconnect:
+
+  ```java
+  UtilServerTimer.stopTurnTimer(gameState, now);
+  UtilServerPassiveTimer.pausePassiveTimer(gameState, now);
+  ```
+
+- In `UtilServerStartGame.java`, on reconnect:
+
+  ```java
+  if (!game.isWaitingForOpponent()) {
+      UtilServerTimer.startTurnTimer(gameState, now);
+  } else {
+      UtilServerPassiveTimer.startPassiveTimer(gameState, now);
+  }
+  ```
 
 ---
 

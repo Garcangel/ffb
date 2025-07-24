@@ -148,6 +148,8 @@ public class UtilServerStartGame {
 			}
 			if (!game.isWaitingForOpponent()) {
 				UtilServerTimer.startTurnTimer(gameState, System.currentTimeMillis());
+			} else {
+				UtilServerPassiveTimer.startPassiveTimer(gameState, System.currentTimeMillis());
 			}
 
 			server.getCommunication().sendGameState(gameState);
