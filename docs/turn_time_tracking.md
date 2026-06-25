@@ -25,7 +25,7 @@
 
 - `recordPassiveTime(boolean isHomeTeam, long durationMs, String context)`
 
-  - Adds a passive time entry for a team, for e.g. skill selection, inducement, etc.
+  - Adds a passive time entry for a team, for e.g. skill selection, inducement, etc (not yet implemented).
 
 **Fields for passive timing:**
 
@@ -75,7 +75,7 @@ public long getPassiveStart() {
 ### 2.2 `TeamTimeTracker` (model/TeamTimeTracker.java)
 
 - Records **per-team** logs of all turn and passive events.
-- **New:** Now uses a unified `TimingEvent` class for both turn and passive events (renamed from `TurnTiming`).
+- Uses a unified `TimingEvent` class for both turn and passive events.
 
 **Key fields:**
 
@@ -130,7 +130,7 @@ public static void syncPassiveTimer(GameState gameState, long currentTimeMillis)
 ### 2.4 `UtilServerDialog` (server/util/UtilServerDialog.java)
 
 - **Central switch:** On dialog events that require pausing the turn timer,
-  both timers are now managed together for full timing accuracy.
+  both timers are now managed together for timing accuracy.
 
   - On `showDialog(...)` with `stopTurnTimer=true`:
 
@@ -270,7 +270,7 @@ TimingEvent(
 
 - **Passive timing state is NOT stored in GameState or legacy timer fields.**
 - All code is **side-effect free:** No change to game rules, enforcement, or user experience yet.
-- **Compatible with existing TimerTask tick system**—can be extended to tick passive timer like turn timer.
+- **Compatible with existing TimerTask tick system**, can be extended to tick passive timer like turn timer.
 
 ---
 

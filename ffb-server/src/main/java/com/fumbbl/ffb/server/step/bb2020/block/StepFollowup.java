@@ -65,8 +65,13 @@ public class StepFollowup extends AbstractStep {
 				case CLIENT_USE_SKILL:
 					ClientCommandUseSkill useSkillCommand = (ClientCommandUseSkill) pReceivedCommand.getCommand();
 					if (useSkillCommand.getSkill().hasSkillProperty(NamedProperties.preventOpponentFollowingUp)) {
-						usingSkillPreventingFollowUp = useSkillCommand.isSkillUsed();
-						commandStatus = StepCommandStatus.EXECUTE_STEP;
+						if (UtilServerDialog.isValidSkillDialog(getGameState().getGame(), useSkillCommand)) {
+							usingSkillPreventingFollowUp = useSkillCommand.isSkillUsed();
+							commandStatus = StepCommandStatus.EXECUTE_STEP;
+						} else {
+							// Ignore as stale/late/invalid
+							System.out.println("CLIENT_USE_SKILL rejected: no active dialog or already resolved for player " + useSkillCommand.getPlayerId());
+						}
 					}
 					break;
 				case CLIENT_FOLLOWUP_CHOICE:

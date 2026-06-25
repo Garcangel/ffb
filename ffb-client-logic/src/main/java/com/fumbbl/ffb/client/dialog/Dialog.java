@@ -30,6 +30,7 @@ public abstract class Dialog extends JInternalFrame implements IDialog, MouseLis
 	private IDialogCloseListener fCloseListener;
 	private final FantasyFootballClient fClient;
 	private boolean fChatInputFocus;
+	protected javax.swing.JLabel timerLabel;
 
 	public Dialog(FantasyFootballClient pClient, String pTitle, boolean pCloseable) {
 		super(pTitle, false, pCloseable);
@@ -166,4 +167,38 @@ public abstract class Dialog extends JInternalFrame implements IDialog, MouseLis
 	protected FontCache fontCache() {
 		return getClient().getUserInterface().getFontCache();
 	}
+
+	protected void addTimerLabelIfTimed(boolean timedChoice) {
+		if (timedChoice) {
+			timerLabel = new javax.swing.JLabel("00:00");
+			getContentPane().add(timerLabel, 1);
+			getContentPane().revalidate();
+			getContentPane().repaint();
+			pack();
+			setLocationToCenter();
+		}
+	}
+
+	public void updateTimerLabel(long ms) {
+		if (timerLabel != null) {
+			long totalSeconds = ms / 1000;
+			long minutes = totalSeconds / 60;
+			long seconds = totalSeconds % 60;
+			timerLabel.setText(String.format("%02d:%02d", minutes, seconds));
+		}
+	}
+
+	public static void updateTimerForActiveDialogs(FantasyFootballClient client, long ms) {
+		JInternalFrame[] frames = client.getUserInterface().getDesktop().getAllFrames();
+		for (JInternalFrame frame : frames) {
+			if (frame instanceof Dialog) {
+				((Dialog) frame).updateTimerLabel(ms);
+			}
+		}
+	}
+
+	public javax.swing.JLabel getTimerLabel() {
+    return timerLabel;
+  }
+
 }

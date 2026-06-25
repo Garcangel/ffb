@@ -4,9 +4,12 @@ import com.fumbbl.ffb.SoundId;
 import com.fumbbl.ffb.model.Game;
 import com.fumbbl.ffb.server.FantasyFootballServer;
 import com.fumbbl.ffb.server.GameState;
+import com.fumbbl.ffb.server.util.UtilServerDialog;
 import com.fumbbl.ffb.server.util.UtilServerGame;
 import com.fumbbl.ffb.server.util.UtilServerPassiveTimer;
+import com.fumbbl.ffb.server.util.UtilServerTimeout;
 import com.fumbbl.ffb.server.util.UtilServerTimer;
+
 
 import java.util.TimerTask;
 
@@ -26,6 +29,9 @@ public class ServerGameTimeTask extends TimerTask {
 				boolean timeoutPossible = game.isTimeoutPossible();
 				UtilServerTimer.syncTime(gameState, currentTimeMillis);
 				UtilServerPassiveTimer.syncPassiveTimer(gameState, currentTimeMillis);
+
+        UtilServerTimeout.resolveTimeoutIfNeeded(gameState, currentTimeMillis);
+
 				fServer.getCommunication().sendGameTime(gameState);
 				// check if timeout flag has changes -> sync game model
 				if (timeoutPossible != game.isTimeoutPossible()) {

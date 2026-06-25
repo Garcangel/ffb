@@ -18,6 +18,7 @@ public class DialogSkillUseParameter implements IDialogParameter {
 	private Skill fSkill, modifyingSkill;
 	private int fMinimumRoll;
 	private boolean showNeverUse;
+	private boolean timedChoice = false;
 
 	private CommonProperty menuProperty;
 
@@ -83,11 +84,22 @@ public class DialogSkillUseParameter implements IDialogParameter {
 	public boolean isShowNeverUse() {
 		return showNeverUse;
 	}
+
+	public boolean isTimedChoice() { 
+		return timedChoice; 
+	}
+
+  public void setTimedChoice(boolean timed) { 
+		this.timedChoice = timed; 
+	}
+
 // transformation
 
 	public IDialogParameter transform() {
-		return new DialogSkillUseParameter(getPlayerId(), getSkill(), getMinimumRoll(), modifyingSkill, menuProperty,
+		DialogSkillUseParameter param = new DialogSkillUseParameter(getPlayerId(), getSkill(), getMinimumRoll(), modifyingSkill, menuProperty,
 			defaultValueKey, showNeverUse);
+		param.setTimedChoice(isTimedChoice());
+		return param;
 	}
 
 	// JSON serialization
@@ -104,6 +116,7 @@ public class DialogSkillUseParameter implements IDialogParameter {
 		}
 		IJsonOption.DEFAULT_VALUE_KEY.addTo(jsonObject, defaultValueKey);
 		IJsonOption.SHOW_NEVER_USE.addTo(jsonObject, showNeverUse);
+		IJsonOption.TIMED_CHOICE.addTo(jsonObject, timedChoice);
 		return jsonObject;
 	}
 
@@ -120,6 +133,9 @@ public class DialogSkillUseParameter implements IDialogParameter {
 		defaultValueKey = IJsonOption.DEFAULT_VALUE_KEY.getFrom(source, jsonObject);
 		if (IJsonOption.SHOW_NEVER_USE.isDefinedIn(jsonObject)) {
 			showNeverUse = IJsonOption.SHOW_NEVER_USE.getFrom(source, jsonObject);
+		}
+		if (IJsonOption.TIMED_CHOICE.isDefinedIn(jsonObject)) {
+			timedChoice = IJsonOption.TIMED_CHOICE.getFrom(source, jsonObject);
 		}
 		return this;
 	}

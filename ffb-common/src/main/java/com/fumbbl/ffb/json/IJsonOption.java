@@ -574,6 +574,7 @@ public interface IJsonOption {
 	JsonStringOption THROWER_ID = new JsonStringOption("throwerId");
 	JsonStringOption THROWN_PLAYER_ID = new JsonStringOption("thrownPlayerId");
 	JsonBooleanOption THROW_TEAM_MATE = new JsonBooleanOption("throwTeamMate");
+	JsonBooleanOption TIMED_CHOICE = new JsonBooleanOption("timedChoice");
 	JsonBooleanOption TIMEOUT_ENFORCED = new JsonBooleanOption("timeoutEnforced");
 	JsonBooleanOption TIMEOUT_POSSIBLE = new JsonBooleanOption("timeoutPossible");
 	JsonLongOption TIMESTAMP = new JsonLongOption("timestamp");

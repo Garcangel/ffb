@@ -18,12 +18,20 @@ public class DialogSkillUse extends DialogThreeWayChoice {
 			pDialogParameter.getModifyingSkill() == null ? "No" : "None", 'N',
 			pDialogParameter.getMenuProperty(), pDialogParameter.getDefaultValueKey());
 		fDialogParameter = pDialogParameter;
+		System.out.println("[CLIENT] DialogSkillUseParameter JSON: " + pDialogParameter.toJsonValue().toString());
+		System.out.println("DialogSkillUse: isTimedChoice=" + fDialogParameter.isTimedChoice());
+		System.out.println("[CLIENT] DialogSkillUse: isTimedChoice=" + fDialogParameter.isTimedChoice());
+		addTimerLabelIfTimed(fDialogParameter.isTimedChoice());
 	}
 
 	public DialogSkillUse(FantasyFootballClient pClient, DialogSkillUseParameter pDialogParameter) {
 		super(pClient, "Use a skill", createMessages(pDialogParameter), null, pDialogParameter.getMenuProperty(),
 			pDialogParameter.getDefaultValueKey());
 		fDialogParameter = pDialogParameter;
+		System.out.println("[CLIENT] DialogSkillUseParameter JSON: " + pDialogParameter.toJsonValue().toString());
+		System.out.println("[CLIENT] DialogSkillUse: isTimedChoice=" + fDialogParameter.isTimedChoice());
+		System.out.println("DialogSkillUse: isTimedChoice=" + fDialogParameter.isTimedChoice());
+		addTimerLabelIfTimed(fDialogParameter.isTimedChoice());
 	}
 
 	public static DialogSkillUse create(FantasyFootballClient pClient, DialogSkillUseParameter pDialogParameter) {

@@ -11,6 +11,7 @@ import com.fumbbl.ffb.Pushback;
 import com.fumbbl.ffb.PushbackMode;
 import com.fumbbl.ffb.PushbackSquare;
 import com.fumbbl.ffb.RulesCollection;
+import com.fumbbl.ffb.dialog.DialogSkillUseParameter;
 import com.fumbbl.ffb.factory.IFactorySource;
 import com.fumbbl.ffb.json.UtilJson;
 import com.fumbbl.ffb.model.FieldModel;
@@ -86,7 +87,16 @@ public class StepPushback extends AbstractStep {
 		if (commandStatus == StepCommandStatus.UNHANDLED_COMMAND) {
 			switch (pReceivedCommand.getId()) {
 				case CLIENT_USE_SKILL:
-					commandStatus = handleSkillCommand((ClientCommandUseSkill) pReceivedCommand.getCommand(), state);
+					System.out.println("Received CLIENT_USE_SKILL in StepPushback: " + pReceivedCommand.getCommand());
+					ClientCommandUseSkill cmd = (ClientCommandUseSkill) pReceivedCommand.getCommand();
+					
+					// Failsafe: Only process this skill-use command if there is an active dialog for this exact player and skill.
+					if (UtilServerDialog.isValidSkillDialog(getGameState().getGame(), cmd)) {
+						commandStatus = handleSkillCommand(cmd, state);
+					} else {
+						// Ignore as stale/late/invalid
+						System.out.println("CLIENT_USE_SKILL rejected: no active dialog or already resolved for player " + cmd.getPlayerId());
+					}
 					break;
 				case CLIENT_PUSHBACK:
 					ClientCommandPushback pushbackCommand = (ClientCommandPushback) pReceivedCommand.getCommand();

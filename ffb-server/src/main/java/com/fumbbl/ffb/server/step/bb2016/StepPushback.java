@@ -100,6 +100,7 @@ public class StepPushback extends AbstractStep {
 		if (commandStatus == StepCommandStatus.UNHANDLED_COMMAND) {
 			switch (pReceivedCommand.getId()) {
 			case CLIENT_USE_SKILL:
+			  System.out.println("Received CLIENT_USE_SKILL in StepPushback: " + pReceivedCommand.getCommand());
 				commandStatus = handleSkillCommand((ClientCommandUseSkill) pReceivedCommand.getCommand(), state);
 				break;
 			case CLIENT_PUSHBACK:

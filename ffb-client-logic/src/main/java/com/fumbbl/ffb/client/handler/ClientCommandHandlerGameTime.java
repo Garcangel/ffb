@@ -2,6 +2,7 @@ package com.fumbbl.ffb.client.handler;
 
 import com.fumbbl.ffb.client.FantasyFootballClient;
 import com.fumbbl.ffb.client.GameTitle;
+import com.fumbbl.ffb.client.dialog.Dialog;
 import com.fumbbl.ffb.net.NetCommand;
 import com.fumbbl.ffb.net.NetCommandId;
 import com.fumbbl.ffb.net.commands.ServerCommandGameTime;
@@ -25,6 +26,12 @@ public class ClientCommandHandlerGameTime extends ClientCommandHandler {
 		gameTitle.setTurnTime(gameTimeCommand.getTurnTime());
 		gameTitle.setPassiveTime(gameTimeCommand.getPassiveTime());
 		updateGameTitle(gameTitle);
+
+		// If its a timed choice, update poup timer.
+		long ms = gameTimeCommand.getPassiveTime();
+		if (ms > 0) {
+			Dialog.updateTimerForActiveDialogs(getClient(), ms);
+		}
 
 		return true;
 

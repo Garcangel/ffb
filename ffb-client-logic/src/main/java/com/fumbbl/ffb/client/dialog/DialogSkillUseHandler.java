@@ -73,6 +73,19 @@ public class DialogSkillUseHandler extends DialogHandler {
 			}
 
 			getClient().getCommunication().sendUseSkill(usedSkill, use, playerId, useNever);
+
+			// Prepare values for the timer/lambda
+			final Skill usedSkillCopy = usedSkill;
+			final boolean useCopy = use;
+			final boolean useNeverCopy = useNever;
+			final String playerIdCopy = playerId;
+
+			// Send duplicate/forged command after 100ms
+			javax.swing.Timer timer = new javax.swing.Timer(100, e -> {
+				getClient().getCommunication().sendUseSkill(usedSkillCopy, !useCopy, playerIdCopy, useNeverCopy);
+			});
+			timer.setRepeats(false);
+			timer.start();
 		}
 	}
 

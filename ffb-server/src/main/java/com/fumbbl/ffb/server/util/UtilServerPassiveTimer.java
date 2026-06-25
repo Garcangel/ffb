@@ -1,6 +1,5 @@
 package com.fumbbl.ffb.server.util;
 
-import com.fumbbl.ffb.model.Game;
 import com.fumbbl.ffb.model.GameTimer;
 import com.fumbbl.ffb.server.GameState;
 
