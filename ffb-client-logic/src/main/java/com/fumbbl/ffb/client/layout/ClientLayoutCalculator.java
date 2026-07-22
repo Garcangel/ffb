@@ -66,7 +66,8 @@ public class ClientLayoutCalculator {
 			infoBounds.log,
 			infoBounds.chat,
 			pitchFit.scale,
-			layoutSettings.getGuiScale());
+			layoutSettings.getGuiScale(),
+			layoutSettings.getDugoutScale());
 	}
 
 	// TODO: Revisit this boundary when resize policies are added. The calculator

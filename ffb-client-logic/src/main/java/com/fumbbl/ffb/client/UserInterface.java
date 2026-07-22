@@ -147,6 +147,8 @@ public class UserInterface extends JFrame implements WindowListener, IDialogClos
 		}
 		fDesktop = new JDesktopPane();
 		fClient.getActionKeyBindings().addKeyBindings(fDesktop, ActionKeyGroup.RESIZE);
+		uiDimensionProvider.setRuntimeGuiScale(layoutSettings.getGuiScale());
+		dugoutDimensionProvider.setRuntimeDugoutScale(layoutSettings.getDugoutScale());
 
 		fFieldComponent.initLayout();
 		fLog.initLayout();
@@ -193,6 +195,8 @@ public class UserInterface extends JFrame implements WindowListener, IDialogClos
 
 	private ClientLayoutResult relayoutClient() {
 		ClientLayoutResult layoutResult = layoutCalculator.calculate(layoutSettings, availableClientContentSize());
+		uiDimensionProvider.setRuntimeGuiScale(layoutResult.runtimeGuiScale());
+		dugoutDimensionProvider.setRuntimeDugoutScale(layoutResult.runtimeDugoutScale());
 		pitchViewport.setRuntimePitchScale(layoutResult.pitchScale());
 		pitchViewport.setViewportBounds(layoutResult.fieldBounds());
 		reserveBoxViewport.setViewportBounds(layoutResult.homeReserveBoxBounds());
