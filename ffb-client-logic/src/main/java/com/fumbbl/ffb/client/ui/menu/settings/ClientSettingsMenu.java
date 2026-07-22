@@ -137,6 +137,7 @@ public class ClientSettingsMenu extends FfbMenu {
 		
 		boolean refreshUi = updateScaling();
 		refreshUi |= updateOrientation();
+		refreshUi |= updateDynamicPitchScaling();
 
 		return refreshUi;
 	}
@@ -524,6 +525,18 @@ public class ClientSettingsMenu extends FfbMenu {
 				fontCache.clear();
 				UIManager.put("ToolTip.font", fontCache.font(Font.PLAIN, 14, dimensionProvider));
 			}
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean updateDynamicPitchScaling() {
+		String value = client.getProperty(SETTING_DYNAMIC_PITCH_SCALING);
+		boolean dynamicPitchScaling = !IClientPropertyValue.SETTING_DYNAMIC_PITCH_SCALING_OFF.equals(value);
+
+		if (dynamicPitchScaling != layoutSettings.isDynamicPitchScaling()) {
+			layoutSettings.setDynamicPitchScaling(dynamicPitchScaling);
 			return true;
 		}
 
