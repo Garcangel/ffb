@@ -197,6 +197,9 @@ public class UserInterface extends JFrame implements WindowListener, IDialogClos
 		ClientLayoutResult layoutResult = layoutCalculator.calculate(layoutSettings, availableClientContentSize());
 		uiDimensionProvider.setRuntimeGuiScale(layoutResult.runtimeGuiScale());
 		dugoutDimensionProvider.setRuntimeDugoutScale(layoutResult.runtimeDugoutScale());
+
+		resizeGuiIfNeeded();
+
 		pitchViewport.setRuntimePitchScale(layoutResult.pitchScale());
 		pitchViewport.setViewportBounds(layoutResult.fieldBounds());
 		reserveBoxViewport.setViewportBounds(layoutResult.homeReserveBoxBounds());
@@ -219,6 +222,16 @@ public class UserInterface extends JFrame implements WindowListener, IDialogClos
 			fDesktop.revalidate();
 			fDesktop.repaint();
 		}
+	}
+
+	private boolean resizeGuiIfNeeded() {
+		boolean resized = false;
+		resized |= fLog.resizeIfNeeded();
+		resized |= fChat.resizeIfNeeded();
+		resized |= fSideBarHome.resizeIfNeeded();
+		resized |= fSideBarAway.resizeIfNeeded();
+		resized |= fScoreBar.resizeIfNeeded();
+		return resized;
 	}
 
 	private Dimension availableClientContentSize() {

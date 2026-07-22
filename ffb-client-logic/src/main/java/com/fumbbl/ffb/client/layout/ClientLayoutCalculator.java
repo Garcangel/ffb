@@ -43,14 +43,28 @@ public class ClientLayoutCalculator {
 	}
 
 	public ClientLayoutResult calculate(LayoutSettings layoutSettings, Dimension availableSize) {
-		Dimension sidebar = dimension(layoutSettings, Component.SIDEBAR);
-		Dimension reserveBox = dimension(layoutSettings, Component.BOX);
-		Dimension score = dimension(layoutSettings, Component.SCORE_BOARD);
-		Dimension log = dimension(layoutSettings, Component.LOG);
-		Dimension chat = dimension(layoutSettings, Component.CHAT);
+		double runtimeResizeScale = runtimeResizeScale(layoutSettings, availableSize);
+		double guiScale = layoutSettings.getGuiScale() * runtimeResizeScale;
+		double dugoutScale = layoutSettings.getDugoutScale() * runtimeResizeScale;
+
+		Dimension sidebar = dimension(layoutSettings, Component.SIDEBAR, guiScale);
+		Dimension reserveBox = dimension(layoutSettings, Component.BOX, guiScale);
+		Dimension score = dimension(layoutSettings, Component.SCORE_BOARD, guiScale);
+		Dimension log = dimension(layoutSettings, Component.LOG, guiScale);
+		Dimension chat = dimension(layoutSettings, Component.CHAT, guiScale);
 		Dimension pitch = unscaledDimension(layoutSettings, Component.FIELD);
 
-		Rectangle content = new Rectangle(0, 0, availableSize.width, availableSize.height);
+		Dimension layoutSize = layoutSettings.isDynamicPitchScaling()
+			? new Dimension(availableSize)
+			: LayoutAreas.naturalSize(layoutSettings.getLayout(), sidebar,
+				scale(pitch, layoutSettings.getPitchScale() * runtimeResizeScale), score, log, chat);
+
+		Rectangle content = new Rectangle(
+			(availableSize.width - layoutSize.width) / 2,
+			(availableSize.height - layoutSize.height) / 2,
+			layoutSize.width,
+			layoutSize.height);
+
 		LayoutAreas areas = LayoutAreas.arrange(layoutSettings.getLayout(), content, sidebar.width, score, log, chat);
 		PitchFit pitchFit = fitPitch(areas.pitchArea, pitch);
 		Rectangle infoArea = areas.finalInfoArea(pitchFit.bounds);
@@ -66,8 +80,8 @@ public class ClientLayoutCalculator {
 			infoBounds.log,
 			infoBounds.chat,
 			pitchFit.scale,
-			layoutSettings.getGuiScale(),
-			layoutSettings.getDugoutScale());
+			guiScale,
+			dugoutScale);
 	}
 
 	// TODO: Revisit this boundary when resize policies are added. The calculator
@@ -121,6 +135,10 @@ public class ClientLayoutCalculator {
 		return scale(unscaledDimension(layoutSettings, component), layoutSettings.getGuiScale());
 	}
 
+	private Dimension dimension(LayoutSettings layoutSettings, Component component, double scale) {
+		return scale(unscaledDimension(layoutSettings, component), scale);
+	}
+
 	private Dimension unscaledDimension(LayoutSettings layoutSettings, Component component) {
 		return component.dimension(layoutSettings.getLayout());
 	}
@@ -128,4 +146,15 @@ public class ClientLayoutCalculator {
 	private Dimension scale(Dimension dimension, double scale) {
 		return new Dimension(scaled(dimension.width, scale), scaled(dimension.height, scale));
 	}
+
+	private double runtimeResizeScale(LayoutSettings layoutSettings, Dimension availableSize) {
+		if (layoutSettings.isDynamicPitchScaling()) {
+			return 1.0;
+		}
+
+		Dimension naturalSize = naturalContentSize(layoutSettings);
+		return Math.min((double) availableSize.width / naturalSize.width,
+			(double) availableSize.height / naturalSize.height);
+	}
+
 }
