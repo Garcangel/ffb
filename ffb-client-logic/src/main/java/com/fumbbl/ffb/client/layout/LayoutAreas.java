@@ -61,43 +61,76 @@ class LayoutAreas {
 	}
 
 	private static LayoutAreas landscape(Rectangle content, int railWidth, Dimension infoSize) {
-		Rectangle centerColumn = new Rectangle(content.x + railWidth, content.y,
-			Math.max(1, content.width - (2 * railWidth)), content.height);
-		int pitchAreaHeight = Math.max(1, centerColumn.height - infoSize.height);
+		Rectangle homeRail = leftStrip(content, railWidth);
+		Rectangle awayRail = rightStrip(content, railWidth);
+		Rectangle centerColumn = betweenHorizontal(homeRail, awayRail, content);
+		Rectangle infoArea = bottomStrip(centerColumn, infoSize.height);
+		Rectangle pitchArea = above(centerColumn, infoArea);
 
 		return new LayoutAreas(
-			new Rectangle(content.x, content.y, railWidth, content.height),
-			new Rectangle(content.x + content.width - railWidth, content.y, railWidth, content.height),
-			new Rectangle(centerColumn.x, centerColumn.y, centerColumn.width, pitchAreaHeight),
-			new Rectangle(centerColumn.x, centerColumn.y + pitchAreaHeight, centerColumn.width, infoSize.height),
+			homeRail,
+			awayRail,
+			pitchArea,
+			infoArea,
 			InfoPosition.BOTTOM
 		);
 	}
 
 	private static LayoutAreas portrait(Rectangle content, int railWidth, Dimension infoSize) {
-		int gameHeight = Math.max(1, content.height - infoSize.height);
-		Rectangle gameArea = new Rectangle(content.x, content.y, content.width, gameHeight);
+		Rectangle infoArea = bottomStrip(content, infoSize.height);
+		Rectangle gameArea = above(content, infoArea);
+		Rectangle homeRail = leftStrip(gameArea, railWidth);
+		Rectangle awayRail = rightStrip(gameArea, railWidth);
+		Rectangle pitchArea = betweenHorizontal(homeRail, awayRail, gameArea);
 
 		return new LayoutAreas(
-			new Rectangle(gameArea.x, gameArea.y, railWidth, gameArea.height),
-			new Rectangle(gameArea.x + gameArea.width - railWidth, gameArea.y, railWidth, gameArea.height),
-			new Rectangle(gameArea.x + railWidth, gameArea.y, Math.max(1, gameArea.width - (2 * railWidth)), gameArea.height),
-			new Rectangle(content.x, content.y + gameHeight, content.width, infoSize.height),
+			homeRail,
+			awayRail,
+			pitchArea,
+			infoArea,
 			InfoPosition.BOTTOM
 		);
 	}
 
 	private static LayoutAreas square(Rectangle content, int railWidth, Dimension infoSize) {
-		int gameWidth = Math.max(1, content.width - infoSize.width);
-		Rectangle gameArea = new Rectangle(content.x, content.y, gameWidth, content.height);
+		Rectangle infoArea = rightStrip(content, infoSize.width);
+		Rectangle gameArea = leftOf(content, infoArea);
+		Rectangle homeRail = leftStrip(gameArea, railWidth);
+		Rectangle awayRail = rightStrip(gameArea, railWidth);
+		Rectangle pitchArea = betweenHorizontal(homeRail, awayRail, gameArea);
 
 		return new LayoutAreas(
-			new Rectangle(gameArea.x, gameArea.y, railWidth, gameArea.height),
-			new Rectangle(gameArea.x + gameArea.width - railWidth, gameArea.y, railWidth, gameArea.height),
-			new Rectangle(gameArea.x + railWidth, gameArea.y, Math.max(1, gameArea.width - (2 * railWidth)), gameArea.height),
-			new Rectangle(content.x + gameWidth, content.y, infoSize.width, content.height),
+			homeRail,
+			awayRail,
+			pitchArea,
+			infoArea,
 			InfoPosition.RIGHT
 		);
+	}
+
+	private static Rectangle leftStrip(Rectangle rectangle, int width) {
+		return new Rectangle(rectangle.x, rectangle.y, width, rectangle.height);
+	}
+
+	private static Rectangle rightStrip(Rectangle rectangle, int width) {
+		return new Rectangle(rectangle.x + rectangle.width - width, rectangle.y, width, rectangle.height);
+	}
+
+	private static Rectangle bottomStrip(Rectangle rectangle, int height) {
+		int availableHeight = Math.max(1, rectangle.height - height);
+		return new Rectangle(rectangle.x, rectangle.y + availableHeight, rectangle.width, height);
+	}
+
+	private static Rectangle leftOf(Rectangle rectangle, Rectangle rightStrip) {
+		return new Rectangle(rectangle.x, rectangle.y, Math.max(1, rightStrip.x - rectangle.x), rectangle.height);
+	}
+
+	private static Rectangle above(Rectangle rectangle, Rectangle bottomStrip) {
+		return new Rectangle(rectangle.x, rectangle.y, rectangle.width, Math.max(1, bottomStrip.y - rectangle.y));
+	}
+
+	private static Rectangle betweenHorizontal(Rectangle left, Rectangle right, Rectangle bounds) {
+		return new Rectangle(left.x + left.width, bounds.y, Math.max(1, right.x - (left.x + left.width)), bounds.height);
 	}
 
 	private static Dimension landscapeNaturalSize(Dimension rail, Dimension pitch, Dimension infoSize) {
