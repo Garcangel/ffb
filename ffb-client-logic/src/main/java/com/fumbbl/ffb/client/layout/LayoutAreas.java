@@ -127,31 +127,6 @@ class LayoutAreas {
 		);
 	}
 
-	private static Rectangle leftStrip(Rectangle rectangle, int width) {
-		return new Rectangle(rectangle.x, rectangle.y, width, rectangle.height);
-	}
-
-	private static Rectangle rightStrip(Rectangle rectangle, int width) {
-		return new Rectangle(rectangle.x + rectangle.width - width, rectangle.y, width, rectangle.height);
-	}
-
-	private static Rectangle bottomStrip(Rectangle rectangle, int height) {
-		int availableHeight = Math.max(1, rectangle.height - height);
-		return new Rectangle(rectangle.x, rectangle.y + availableHeight, rectangle.width, height);
-	}
-
-	private static Rectangle leftOf(Rectangle rectangle, Rectangle rightStrip) {
-		return new Rectangle(rectangle.x, rectangle.y, Math.max(1, rightStrip.x - rectangle.x), rectangle.height);
-	}
-
-	private static Rectangle above(Rectangle rectangle, Rectangle bottomStrip) {
-		return new Rectangle(rectangle.x, rectangle.y, rectangle.width, Math.max(1, bottomStrip.y - rectangle.y));
-	}
-
-	private static Rectangle betweenHorizontal(Rectangle left, Rectangle right, Rectangle bounds) {
-		return new Rectangle(left.x + left.width, bounds.y, Math.max(1, right.x - (left.x + left.width)), bounds.height);
-	}
-
 	private static Dimension landscapeNaturalSize(Dimension rail, Dimension pitch, Dimension infoSize) {
 		int centerWidth = Math.max(pitch.width, infoSize.width);
 		int centerHeight = pitch.height + infoSize.height;
@@ -168,6 +143,21 @@ class LayoutAreas {
 		int gameWidth = rail.width + pitch.width + rail.width;
 		int gameHeight = Math.max(rail.height, pitch.height);
 		return new Dimension(gameWidth + infoSize.width, Math.max(gameHeight, infoSize.height));
+	}
+
+	private static Dimension bottomInfoSize(Dimension score, Dimension log, Dimension chat) {
+		Dimension logChat = logChatSize(log, chat);
+		return new Dimension(Math.max(score.width, logChat.width), score.height + logChat.height);
+	}
+
+	private static Dimension rightInfoSize(Dimension score, Dimension log, Dimension chat) {
+		return new Dimension(Math.max(log.width, Math.max(score.width, chat.width)) + (2 * PANEL_BORDER),
+			log.height + score.height + chat.height + (2 * PANEL_BORDER));
+	}
+
+	private static Dimension logChatSize(Dimension log, Dimension chat) {
+		return new Dimension(log.width + LOG_CHAT_GAP + chat.width + (2 * PANEL_BORDER),
+			Math.max(log.height, chat.height) + (2 * PANEL_BORDER));
 	}
 
 	Rectangle finalInfoArea(Rectangle pitchBounds) {
@@ -188,38 +178,64 @@ class LayoutAreas {
 
 	private HudBounds placeRightHud(Rectangle infoArea, Rectangle homeReserveBox, Dimension score, Dimension log,
 		Dimension chat) {
-		Rectangle logBounds = new Rectangle(infoArea.x + PANEL_BORDER, infoArea.y + PANEL_BORDER, log.width, log.height);
-		Rectangle scoreBounds = new Rectangle(infoArea.x + PANEL_BORDER, infoArea.y + log.height + PANEL_BORDER,
-			score.width, score.height);
-		Rectangle chatBounds = new Rectangle(infoArea.x + PANEL_BORDER, infoArea.y + log.height + score.height + PANEL_BORDER,
-			chat.width, chat.height);
+		Rectangle logBounds = topLeft(infoArea, log, PANEL_BORDER, PANEL_BORDER);
+		Rectangle scoreBounds = below(logBounds, score);
+		Rectangle chatBounds = below(scoreBounds, chat);
 		return new HudBounds(homeRail, homeReserveBox, awayRail, scoreBounds, logBounds, chatBounds);
 	}
 
 	private HudBounds placeBottomHud(Rectangle infoArea, Rectangle homeReserveBox, Dimension score, Dimension log,
 		Dimension chat) {
-		Rectangle scoreBounds = new Rectangle(infoArea.x + ((infoArea.width - score.width) / 2), infoArea.y, score.width,
-			score.height);
-		int logChatWidth = log.width + LOG_CHAT_GAP + chat.width + (2 * PANEL_BORDER);
-		Rectangle logBounds = new Rectangle(infoArea.x + ((infoArea.width - logChatWidth) / 2) + PANEL_BORDER,
-			infoArea.y + score.height + PANEL_BORDER, log.width, log.height);
-		Rectangle chatBounds = new Rectangle(logBounds.x + logBounds.width + LOG_CHAT_GAP, logBounds.y, chat.width,
-			chat.height);
+		Rectangle scoreBounds = topCenter(infoArea, score);
+		Rectangle logChatArea = below(scoreBounds, logChatSize(log, chat), PANEL_BORDER);
+		Rectangle logBounds = topLeft(logChatArea, log, PANEL_BORDER, 0);
+		Rectangle chatBounds = rightOf(logBounds, chat, LOG_CHAT_GAP);
 		return new HudBounds(homeRail, homeReserveBox, awayRail, scoreBounds, logBounds, chatBounds);
 	}
 
-	private static Dimension bottomInfoSize(Dimension score, Dimension log, Dimension chat) {
-		Dimension logChat = logChatSize(log, chat);
-		return new Dimension(Math.max(score.width, logChat.width), score.height + logChat.height);
+	private static Rectangle leftStrip(Rectangle rectangle, int width) {
+		return new Rectangle(rectangle.x, rectangle.y, width, rectangle.height);
 	}
 
-	private static Dimension rightInfoSize(Dimension score, Dimension log, Dimension chat) {
-		return new Dimension(Math.max(log.width, Math.max(score.width, chat.width)) + (2 * PANEL_BORDER),
-			log.height + score.height + chat.height + (2 * PANEL_BORDER));
+	private static Rectangle rightStrip(Rectangle rectangle, int width) {
+		return new Rectangle(rectangle.x + rectangle.width - width, rectangle.y, width, rectangle.height);
 	}
 
-	private static Dimension logChatSize(Dimension log, Dimension chat) {
-		return new Dimension(log.width + LOG_CHAT_GAP + chat.width + (2 * PANEL_BORDER),
-			Math.max(log.height, chat.height) + (2 * PANEL_BORDER));
+	private static Rectangle bottomStrip(Rectangle rectangle, int height) {
+		int availableHeight = Math.max(1, rectangle.height - height);
+		return new Rectangle(rectangle.x, rectangle.y + availableHeight, rectangle.width, height);
 	}
+
+	private static Rectangle leftOf(Rectangle rectangle, Rectangle rightStrip) {
+		return new Rectangle(rectangle.x, rectangle.y, Math.max(1, rightStrip.x - rectangle.x), rectangle.height);
+	}
+
+	private static Rectangle rightOf(Rectangle rectangle, Dimension size, int gap) {
+		return new Rectangle(rectangle.x + rectangle.width + gap, rectangle.y, size.width, size.height);
+	}
+
+	private static Rectangle above(Rectangle rectangle, Rectangle bottomStrip) {
+		return new Rectangle(rectangle.x, rectangle.y, rectangle.width, Math.max(1, bottomStrip.y - rectangle.y));
+	}
+
+	private static Rectangle betweenHorizontal(Rectangle left, Rectangle right, Rectangle bounds) {
+		return new Rectangle(left.x + left.width, bounds.y, Math.max(1, right.x - (left.x + left.width)), bounds.height);
+	}
+
+	private static Rectangle topLeft(Rectangle area, Dimension size, int insetX, int insetY) {
+		return new Rectangle(area.x + insetX, area.y + insetY, size.width, size.height);
+	}
+
+	private static Rectangle topCenter(Rectangle area, Dimension size) {
+		return new Rectangle(area.x + ((area.width - size.width) / 2), area.y, size.width, size.height);
+	}
+
+	private static Rectangle below(Rectangle rectangle, Dimension size) {
+		return new Rectangle(rectangle.x, rectangle.y + rectangle.height, size.width, size.height);
+	}
+
+	private static Rectangle below(Rectangle rectangle, Dimension size, int gap) {
+		return new Rectangle(rectangle.x, rectangle.y + rectangle.height + gap, size.width, size.height);
+	}
+
 }

@@ -43,12 +43,8 @@ public class ClientLayoutCalculator {
 			: LayoutAreas.naturalSize(layoutSettings.getLayout(), sidebar,
 				scale(pitch, layoutSettings.getPitchScale() * runtimeResizeScale), score, log, chat);
 
-		Rectangle content = new Rectangle(
-			(availableSize.width - layoutSize.width) / 2,
-			(availableSize.height - layoutSize.height) / 2,
-			layoutSize.width,
-			layoutSize.height);
-
+		Rectangle content = centered(layoutSize, availableSize);
+		
 		LayoutAreas areas = LayoutAreas.arrange(layoutSettings.getLayout(), content, sidebar.width, score, log, chat);
 		PitchFit pitchFit = fitPitch(areas.pitchArea, pitch);
 		LayoutAreas.HudBounds hudBounds = areas.placeHud(pitchFit.bounds, reserveBox, score, log, chat);
@@ -78,6 +74,14 @@ public class ClientLayoutCalculator {
 
 	private int scaled(int size, double scale) {
 		return (int) (size * scale);
+	}
+
+	private Rectangle centered(Dimension size, Dimension availableSize) {
+		return new Rectangle(
+			(availableSize.width - size.width) / 2,
+			(availableSize.height - size.height) / 2,
+			size.width,
+			size.height);
 	}
 
 	public Dimension naturalContentSize(LayoutSettings layoutSettings) {
