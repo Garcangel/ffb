@@ -8,8 +8,7 @@ import java.awt.Rectangle;
 /**
  * Describes the major regions of a client layout.
  *
- * This class owns layout topology: side rails, pitch area, and panel area.
- * It does not place individual Swing components inside those regions.
+ * This class owns layout topology and HUD component placement.
  */
 
 class LayoutAreas {
@@ -26,6 +25,26 @@ class LayoutAreas {
 	final Rectangle pitchArea;
 	final Rectangle infoArea;
 	final InfoPosition infoPosition;
+
+	static class HudBounds {
+
+		final Rectangle homeRail;
+		final Rectangle homeReserveBox;
+		final Rectangle awayRail;
+		final Rectangle score;
+		final Rectangle log;
+		final Rectangle chat;
+
+		HudBounds(Rectangle homeRail, Rectangle homeReserveBox, Rectangle awayRail, Rectangle score, Rectangle log,
+			Rectangle chat) {
+			this.homeRail = homeRail;
+			this.homeReserveBox = homeReserveBox;
+			this.awayRail = awayRail;
+			this.score = score;
+			this.log = log;
+			this.chat = chat;
+		}
+	}
 
 	private LayoutAreas(Rectangle homeRail, Rectangle awayRail, Rectangle pitchArea, Rectangle infoArea,
 		InfoPosition infoPosition) {
@@ -156,6 +175,37 @@ class LayoutAreas {
 			return new Rectangle(infoArea.x, pitchBounds.y + pitchBounds.height, infoArea.width, infoArea.height);
 		}
 		return new Rectangle(infoArea);
+	}
+
+	HudBounds placeHud(Rectangle pitchBounds, Dimension reserveBox, Dimension score, Dimension log, Dimension chat) {
+		Rectangle infoArea = finalInfoArea(pitchBounds);
+		Rectangle homeReserveBox = new Rectangle(homeRail.x, homeRail.y, reserveBox.width, reserveBox.height);
+		if (infoPosition == InfoPosition.RIGHT) {
+			return placeRightHud(infoArea, homeReserveBox, score, log, chat);
+		}
+		return placeBottomHud(infoArea, homeReserveBox, score, log, chat);
+	}
+
+	private HudBounds placeRightHud(Rectangle infoArea, Rectangle homeReserveBox, Dimension score, Dimension log,
+		Dimension chat) {
+		Rectangle logBounds = new Rectangle(infoArea.x + PANEL_BORDER, infoArea.y + PANEL_BORDER, log.width, log.height);
+		Rectangle scoreBounds = new Rectangle(infoArea.x + PANEL_BORDER, infoArea.y + log.height + PANEL_BORDER,
+			score.width, score.height);
+		Rectangle chatBounds = new Rectangle(infoArea.x + PANEL_BORDER, infoArea.y + log.height + score.height + PANEL_BORDER,
+			chat.width, chat.height);
+		return new HudBounds(homeRail, homeReserveBox, awayRail, scoreBounds, logBounds, chatBounds);
+	}
+
+	private HudBounds placeBottomHud(Rectangle infoArea, Rectangle homeReserveBox, Dimension score, Dimension log,
+		Dimension chat) {
+		Rectangle scoreBounds = new Rectangle(infoArea.x + ((infoArea.width - score.width) / 2), infoArea.y, score.width,
+			score.height);
+		int logChatWidth = log.width + LOG_CHAT_GAP + chat.width + (2 * PANEL_BORDER);
+		Rectangle logBounds = new Rectangle(infoArea.x + ((infoArea.width - logChatWidth) / 2) + PANEL_BORDER,
+			infoArea.y + score.height + PANEL_BORDER, log.width, log.height);
+		Rectangle chatBounds = new Rectangle(logBounds.x + logBounds.width + LOG_CHAT_GAP, logBounds.y, chat.width,
+			chat.height);
+		return new HudBounds(homeRail, homeReserveBox, awayRail, scoreBounds, logBounds, chatBounds);
 	}
 
 	private static Dimension bottomInfoSize(Dimension score, Dimension log, Dimension chat) {

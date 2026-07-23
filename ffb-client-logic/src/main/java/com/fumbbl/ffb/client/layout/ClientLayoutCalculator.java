@@ -15,9 +15,6 @@ import java.awt.Rectangle;
  */
 
 public class ClientLayoutCalculator {
-	private static final int LOG_CHAT_GAP = 2;
-	private static final int PANEL_BORDER = 1;
-
 	private static class PitchFit {
 
 		private final Rectangle bounds;
@@ -26,19 +23,6 @@ public class ClientLayoutCalculator {
 		private PitchFit(Rectangle bounds, double scale) {
 			this.bounds = bounds;
 			this.scale = scale;
-		}
-	}
-
-	private static class InfoBounds {
-
-		private final Rectangle score;
-		private final Rectangle log;
-		private final Rectangle chat;
-
-		private InfoBounds(Rectangle score, Rectangle log, Rectangle chat) {
-			this.score = score;
-			this.log = log;
-			this.chat = chat;
 		}
 	}
 
@@ -67,46 +51,20 @@ public class ClientLayoutCalculator {
 
 		LayoutAreas areas = LayoutAreas.arrange(layoutSettings.getLayout(), content, sidebar.width, score, log, chat);
 		PitchFit pitchFit = fitPitch(areas.pitchArea, pitch);
-		Rectangle infoArea = areas.finalInfoArea(pitchFit.bounds);
-		InfoBounds infoBounds = placeInfoComponents(areas.infoPosition, infoArea, score, log, chat);
+		LayoutAreas.HudBounds hudBounds = areas.placeHud(pitchFit.bounds, reserveBox, score, log, chat);
 
 		return new ClientLayoutResult(
 			new Dimension(availableSize),
 			pitchFit.bounds,
-			areas.homeRail,
-			new Rectangle(areas.homeRail.x, areas.homeRail.y, reserveBox.width, reserveBox.height),
-			areas.awayRail,
-			infoBounds.score,
-			infoBounds.log,
-			infoBounds.chat,
+			hudBounds.homeRail,
+			hudBounds.homeReserveBox,
+			hudBounds.awayRail,
+			hudBounds.score,
+			hudBounds.log,
+			hudBounds.chat,
 			pitchFit.scale,
 			guiScale,
 			dugoutScale);
-	}
-
-	// TODO: Revisit this boundary when resize policies are added. The calculator
-	// currently owns score/log/chat placement, so it needs one topology signal from
-	// LayoutAreas. Avoid moving this into LayoutAreas unless panel placement becomes
-	// part of the topology model.
-	private InfoBounds placeInfoComponents(LayoutAreas.InfoPosition infoPosition, Rectangle infoArea, Dimension score, Dimension log,
-		Dimension chat) {
-		if (infoPosition == LayoutAreas.InfoPosition.RIGHT) {
-			Rectangle logBounds = new Rectangle(infoArea.x + PANEL_BORDER, infoArea.y + PANEL_BORDER, log.width, log.height);
-			Rectangle scoreBounds = new Rectangle(infoArea.x + PANEL_BORDER, infoArea.y + log.height + PANEL_BORDER,
-				score.width, score.height);
-			Rectangle chatBounds = new Rectangle(infoArea.x + PANEL_BORDER, infoArea.y + log.height + score.height + PANEL_BORDER,
-				chat.width, chat.height);
-			return new InfoBounds(scoreBounds, logBounds, chatBounds);
-		}
-
-		Rectangle scoreBounds = new Rectangle(infoArea.x + ((infoArea.width - score.width) / 2), infoArea.y, score.width,
-			score.height);
-		int logChatWidth = log.width + LOG_CHAT_GAP + chat.width + (2 * PANEL_BORDER);
-		Rectangle logBounds = new Rectangle(infoArea.x + ((infoArea.width - logChatWidth) / 2) + PANEL_BORDER,
-			infoArea.y + score.height + PANEL_BORDER, log.width, log.height);
-		Rectangle chatBounds = new Rectangle(logBounds.x + logBounds.width + LOG_CHAT_GAP, logBounds.y, chat.width,
-			chat.height);
-		return new InfoBounds(scoreBounds, logBounds, chatBounds);
 	}
 
 	private PitchFit fitPitch(Rectangle pitchArea, Dimension pitch) {
