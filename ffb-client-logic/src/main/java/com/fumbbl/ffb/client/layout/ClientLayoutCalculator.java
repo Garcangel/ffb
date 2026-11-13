@@ -28,8 +28,7 @@ public class ClientLayoutCalculator {
 
 	public ClientLayoutResult calculate(LayoutSettings layoutSettings, Dimension availableSize) {
 		Dimension naturalSize = referenceContentSize(layoutSettings);
-		double resizeScale = Math.min((double) availableSize.width / naturalSize.width,
-			(double) availableSize.height / naturalSize.height);
+		double resizeScale = resizeScale(naturalSize, availableSize);
 		double effectiveRatio = Math.max(LayoutSettings.MIN_GUI_RATIO,
 			Math.min(layoutSettings.getGuiRatio(), LayoutSettings.MAX_GUI_RATIO));
 		double guiScale = layoutSettings.getScale() * effectiveRatio * resizeScale;
@@ -61,6 +60,15 @@ public class ClientLayoutCalculator {
 			pitchFit.scale,
 			guiScale,
 			guiScale);
+	}
+
+	public double overallScale(LayoutSettings settings, Dimension availableSize) {
+		return settings.getScale() * resizeScale(referenceContentSize(settings), availableSize);
+	}
+
+	private double resizeScale(Dimension reference, Dimension availableSize) {
+		return Math.min((double) availableSize.width / reference.width,
+			(double) availableSize.height / reference.height);
 	}
 
 	private PitchFit fitPitch(Rectangle pitchArea, Dimension pitch) {
