@@ -45,19 +45,15 @@ public class PitchViewport {
 	}
 
 	public int squareSize() {
-		return (int) Math.round(unscaledFieldSquare() * effectiveScale());
+		return squareSize(1);
 	}
 
 	public int squareSize(double factor) {
-		return (int) (squareSize() * factor);
+		return (int) (unscaledFieldSquare() * factor * effectiveScale());
 	}
 
 	public int imageOffset() {
 		return squareSize() / 2;
-	}
-
-	public int gridOffset() {
-		return (squareSize() + unscaledFieldSquare() - 1) / unscaledFieldSquare();
 	}
 
 	public Dimension toLocal(FieldCoordinate coordinate) {
@@ -69,19 +65,19 @@ public class PitchViewport {
 	}
 
 	public Dimension toLocal(int x, int y, boolean center) {
-		int offset = center ? squareSize() / 2 : 0;
+		int offset = center ? unscaledFieldSquare() / 2 : 0;
 		int localX;
 		int localY;
 
 		if (layoutSettings.getLayout().isPortrait()) {
-			localX = y * squareSize() + offset;
-			localY = (25 - x) * squareSize() + offset;
+			localX = y * unscaledFieldSquare() + offset;
+			localY = (25 - x) * unscaledFieldSquare() + offset;
 		} else {
-			localX = x * squareSize() + offset;
-			localY = y * squareSize() + offset;
+			localX = x * unscaledFieldSquare() + offset;
+			localY = y * unscaledFieldSquare() + offset;
 		}
 
-		return new Dimension(gridOffset() + localX, gridOffset() + localY);
+		return new Dimension((int) (localX * effectiveScale()), (int) (localY * effectiveScale()));
 	}
 
 	public Point worldToScreen(FieldCoordinate coordinate) {
@@ -99,15 +95,16 @@ public class PitchViewport {
 
 	public FieldCoordinate toFieldCoordinate(Point localPoint) {
 		FieldCoordinate coordinate = null;
-		int x = localPoint.x - gridOffset();
-		int y = localPoint.y - gridOffset();
-		int columns = layoutSettings.getLayout().isPortrait() ? 15 : 26;
-		int rows = layoutSettings.getLayout().isPortrait() ? 26 : 15;
+		int x = localPoint.x;
+		int y = localPoint.y;
+		Dimension field = fieldSize();
 
-		if ((x >= 0) && (x < columns * squareSize()) && (y >= 0) && (y < rows * squareSize())) {
+		if ((x > 0) && (x < field.width) && (y > 0) && (y < field.height)) {
+			double scale = effectiveScale();
+
 			coordinate = new FieldCoordinate(
-				x / squareSize(),
-				y / squareSize()
+				(int) ((x / scale) / unscaledFieldSquare()),
+				(int) ((y / scale) / unscaledFieldSquare())
 			);
 			coordinate = toGlobal(coordinate);
 		}

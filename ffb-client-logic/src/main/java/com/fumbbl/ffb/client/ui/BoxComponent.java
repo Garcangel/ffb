@@ -39,7 +39,6 @@ import java.util.List;
 public class BoxComponent extends JPanel implements MouseListener, MouseMotionListener, IModelChangeObserver {
 
 	public static final int MAX_BOX_ELEMENTS = 30;
-	public static final int COLUMNS = 3;
 
 	private final FontCache fontCache;
 
@@ -174,8 +173,8 @@ public class BoxComponent extends JPanel implements MouseListener, MouseMotionLi
 		for (int y = 0; y < MAX_BOX_ELEMENTS; y++) {
 			Player<?> player = fieldModel.getPlayer(new FieldCoordinate(pXCoordinate, y));
 			if ((player != null) || (pXCoordinate == FieldCoordinate.RSV_HOME_X)) {
-				row = y / COLUMNS;
-				int locationX = (y % COLUMNS) * dimension.width;
+				row = y / 3;
+				int locationX = (y % 3) * dimension.width;
 				int locationY = yPos + (row * dimension.height);
 				BoxSlot boxSlot = new BoxSlot(new Rectangle(locationX, locationY, dimension.width, dimension.height)
 				);

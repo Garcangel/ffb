@@ -15,6 +15,7 @@ import java.awt.Rectangle;
  */
 
 public class ReserveBoxViewport {
+
 	private final UiDimensionProvider uiDimensionProvider;
 	private Rectangle viewportBounds;
 
@@ -46,8 +47,8 @@ public class ReserveBoxViewport {
 
 		if ((localPoint.x >= 0) && (localPoint.x < viewportBounds.width)
 			&& (localPoint.y >= 0) && (localPoint.y < viewportBounds.height)) {
-			int column = Math.min(localPoint.x / squareSize.width, BoxComponent.COLUMNS - 1);
-			int y = (((localPoint.y - boxTitleOffset) / squareSize.height) * BoxComponent.COLUMNS) + column;
+			int y = (((localPoint.y - boxTitleOffset) / squareSize.height) * 3)
+				+ (localPoint.x / squareSize.width);
 
 			if ((y >= 0) && (y < BoxComponent.MAX_BOX_ELEMENTS)) {
 				return new FieldCoordinate(FieldCoordinate.RSV_HOME_X, y);
