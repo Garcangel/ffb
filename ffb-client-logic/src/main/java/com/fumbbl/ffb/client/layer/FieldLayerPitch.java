@@ -1,11 +1,9 @@
 package com.fumbbl.ffb.client.layer;
 
-import com.fumbbl.ffb.FieldCoordinate;
 import com.fumbbl.ffb.Weather;
 import com.fumbbl.ffb.client.FantasyFootballClient;
 import com.fumbbl.ffb.client.FontCache;
 import com.fumbbl.ffb.client.IconCache;
-import com.fumbbl.ffb.client.LayoutSettings;
 import com.fumbbl.ffb.client.PitchDimensionProvider;
 import com.fumbbl.ffb.client.PitchViewport;
 import com.fumbbl.ffb.client.UiDimensionProvider;
@@ -14,7 +12,6 @@ import com.fumbbl.ffb.model.FieldModel;
 import com.fumbbl.ffb.model.Game;
 
 import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -22,7 +19,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -57,17 +53,6 @@ public class FieldLayerPitch extends FieldLayer {
 		imageToWorld.scale((PitchViewport.WORLD_WIDTH + 2.0) / pImage.getWidth(),
 			(PitchViewport.WORLD_HEIGHT + 2.0) / pImage.getHeight());
 		g2d.drawImage(pImage, imageToWorld, null);
-		// Temporary diagnostic grid.
-		g2d.setColor(Color.MAGENTA);
-		g2d.setStroke(new BasicStroke((float) (1.0 / pitchViewport.effectiveScale())));
-		for (int x = 0; x <= FieldCoordinate.FIELD_WIDTH; x++) {
-			int worldX = x * LayoutSettings.BASE_SQUARE_SIZE;
-			g2d.draw(new Line2D.Double(worldX, 0, worldX, PitchViewport.WORLD_HEIGHT));
-		}
-		for (int y = 0; y <= FieldCoordinate.FIELD_HEIGHT; y++) {
-			int worldY = y * LayoutSettings.BASE_SQUARE_SIZE;
-			g2d.draw(new Line2D.Double(0, worldY, PitchViewport.WORLD_WIDTH, worldY));
-		}
 		g2d.dispose();
 		Rectangle updatedArea = new Rectangle(0, 0, fImage.getWidth(), fImage.getHeight());
 		addUpdatedArea(updatedArea);
