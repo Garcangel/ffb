@@ -13,7 +13,7 @@ The requested direction is:
 
 ## Current Status
 
-Phases 1-13 are implemented or partially implemented. Phase 13 is complete. This branch explores shared world-coordinate rendering in place of the integer-tile implementation preserved on `gui-placement`. GUI placement and fullscreen policy remain separate decisions.
+Phases 1-13 are implemented or partially implemented. Phases 13 and 14 are complete. Phase 14 uses shared world-coordinate rendering in place of the integer-tile implementation preserved on `gui-placement`. GUI placement and fullscreen policy remain separate decisions.
 
 Phase 12 completed in this branch:
 
@@ -216,7 +216,7 @@ The earlier on/off resize policy has been removed. The reference layout uses the
 
 ## Phase 14: Consistent Pitch Geometry
 
-Status: Implementation in progress; final rendering and regression validation pending.
+Status: Done.
 
 The goal is consistent pitch artwork, overlays, clearing and input at continuous scales. Equal whole-pixel square sizes are not a requirement. Adjacent squares can cover different numbers of pixels while remaining equal in world coordinates.
 
@@ -224,7 +224,7 @@ Keep phase 13's continuous fitting and scale controls. `PitchViewport` supplies 
 
 Keep the existing display-sized layer buffers and compositor. Square geometry is transformed at drawing time. Fills and clears use the same non-antialiased shape path; screen-facing decorations retain pixel insets, and sprites retain their existing cached scale and upright orientation. Repaint rectangles enclose the transformed geometry; their integer rounding must not be reused to determine fill coverage. Normal input and setup dragging share the viewport inverse, testing pixel centers and excluding the decorative border.
 
-Verify all four layouts at fractional scales: adjacent translucent fills without gaps or double-painted edges, clearing without residue or damage to neighbors, artwork alignment, input at boundaries, setup dragging and existing layout behavior. The first rendering run passed adjacent translucent coverage but exposed discrepancies between rectangle drawing, clearing and input. Compilation and tests of the subsequent shared shape-path correction are pending. Add a user-facing change list entry when fixing released behavior.
+Validation covers all four layouts at fractional scales, including adjacent fills, clearing, artwork alignment, input boundaries and setup dragging. The client was visually checked and the project passed `mvn clean install`.
 
 ## Phase 15: Move GUI To Rule-Based Placement
 
@@ -259,6 +259,5 @@ No special pitch coordinate logic should be needed for fullscreen.
 
 - `LayoutSettings` scale naming is still confusing because GUI, pitch, and dugout scale are now separate but the final resize-policy API is not done.
 - `ClientLayoutResult.runtimeGuiScale()` is present for the upcoming resize-policy work.
-- Rendering/input boundary agreement and the shared shape-path correction still require validation on this branch.
 - `ClientLayoutCalculator` still has local rectangle arithmetic for score/log/chat placement.
 - The branch is broad because layout, coordinate conversion, rendering, input, animation, dialogs, and setup drag all depend on pitch position/scale.
